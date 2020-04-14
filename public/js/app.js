@@ -1,11 +1,8 @@
-// console.log('Client side javascript file is loaded');
 // async - await syntax vs promise - then
 const fetchURL = async (url, responseHandler) => {
   const response = await (await fetch(url)).json();
   return responseHandler(response);
 };
-
-
 
 // fetchURL('http://localhost:3000/weather?address=11421%20NW%2034th%20Ct%20Vancouver,%20WA',
 //   (data) => {
@@ -28,8 +25,11 @@ weatherForm.addEventListener('submit', (e) => {
   e.preventDefault();
   forecast_location.textContent = 'Loading Forecast ....';
   forecast.textContent = '';
-  fetchURL('http://localhost:3000/weather?address=/'+address.value, (data) => {
-    forecast_location.textContent = `Today's Weather Forecast for ${data.location}`;
-    forecast.textContent = `${data.forecast}`;
-  });
+  fetchURL(
+    'http://localhost:3000/weather?address=/' + address.value,
+    (data) => {
+      forecast_location.textContent = `Today's Weather Forecast for ${data.location}`;
+      forecast.textContent = `${data.forecast}`;
+    }
+  );
 });
