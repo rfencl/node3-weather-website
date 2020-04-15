@@ -7,6 +7,7 @@ const { geocode, coords } = require('./utils/geocode');
 const { callbackify } = require('util');
 
 const app = express();
+const port = process.env.PORT || 3000;
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -20,13 +21,13 @@ const publicDirectoryPath = path.join(__dirname, '../public');
 const viewsPath = path.join(__dirname, '../templates/views');
 const partialsPath = path.join(__dirname, '../templates/partials');
 let formattedLocation;
-const setLocation = (loc) => formattedLocation = loc;
+const setLocation = (loc) => (formattedLocation = loc);
 const run = (location, callback) => {
-  geocode(location, (res) => setLocation(res))    // save the formatted response   
+  geocode(location, (res) => setLocation(res)) // save the formatted response
     .then(() => {
-      getWeatherInfo(coords, (res) => res) 
-      .then((res) => callback(res))
-      .catch((error) => callback(error))
+      getWeatherInfo(coords, (res) => res)
+        .then((res) => callback(res))
+        .catch((error) => callback(error));
     })
     .catch((error) => callback(error));
 };
@@ -34,7 +35,7 @@ const run = (location, callback) => {
 // Template Engine config
 app.set('view engine', 'hbs'); // use handlebars template engine
 app.set('views', viewsPath); // set the path to the views directory
-hbs.registerPartials(partialsPath);  // partials path
+hbs.registerPartials(partialsPath); // partials path
 app.use(express.static(publicDirectoryPath));
 
 // routes
@@ -60,18 +61,18 @@ app.get('/help', (req, res) => {
   });
 });
 
-
 app.get('/weather', (req, res) => {
   if (!req.query.address) {
     return res.send({ error: 'You must provide an address.' });
   }
-  
-  run(req.query.address, (response) => res.send({ 
-    forecast: response,
-    location: coords.location,
-    address: req.query.address,
-   }));
-  
+
+  run(req.query.address, (response) =>
+    res.send({
+      forecast: response,
+      location: coords.location,
+      address: req.query.address,
+    })
+  );
 });
 /**
  * This Route is to just show how I can dump everything.
@@ -103,6 +104,6 @@ app.get('*', (req, res) => {
   res.render('error', { message: 'Page Not Found.', name: 'Tiny Tim' });
 });
 
-app.listen(3000, () => {
-  console.log('Server is up on port 3000.');
+app.listen(port, () => {
+  console.log(`Server is up on port ${port}.`);
 });
