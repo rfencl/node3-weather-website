@@ -3,13 +3,40 @@ const fetchURL = require('./fetchURL');
 const urlbase =
   'https://api.darksky.net/forecast/6041f372b2b59b612b153f165888ff8c/';
 
+const formatTime = (t) => {
+  let h = t.getHours();
+  let ampm = h > 12 ? 'PM' : 'AM';
+  h = h > 12 ? h - 12 : h;
+  let m = t.getMinutes();
+  m = m < 10 ? '0' + m : m;
+  return `${h}:${m} ${ampm}`;
+};
+
+
 const formatWeatherResponse = ({ code, error, currently, daily }) => {
   if (code) {
     return 'Error accessing WeatherReport  ' + error;
   }
   const currentWeatherData = currently;
-  return `${daily.data[0].summary} It is currently ${currentWeatherData.temperature} degrees out. There is ${currentWeatherData.precipProbability}% chance of rain.`;
+
+   const highTime = formatTime(
+     new Date(daily.data[0].temperatureHighTime * 1000)
+   );
+   const lowTime = formatTime(
+     new Date(daily.data[0].temperatureLowTime * 1000)
+   );
+
+  return `${daily.data[0].summary} It is currently ${
+    currentWeatherData.temperature
+  } degrees out. There is ${
+    currentWeatherData.precipProbability
+  }% chance of rain.  Today's low will be ${Math.round(
+    daily.data[0].temperatureLow
+  )} degrees at ${lowTime} with a high of ${Math.round(
+    daily.data[0].temperatureHigh
+  )} degrees at ${highTime}.`;
 };
+
 
 // returns a promise
 const getWeatherInfo = ({ latitude, longitude }, callback) => {

@@ -25,6 +25,7 @@ const setLocation = (loc) => (formattedLocation = loc);
 const run = (location, callback) => {
   geocode(location, (res) => setLocation(res)) // save the formatted response
     .then(() => {
+      //console.log(coords);
       getWeatherInfo(coords, (res) => res)
         .then((res) => callback(res))
         .catch((error) => callback(error));
